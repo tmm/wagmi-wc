@@ -1,5 +1,15 @@
 import { useMemo } from "react";
-import { useAccount, useConnect, useConnections, useDisconnect, useSignMessage, useSwitchAccount } from "wagmi";
+import {
+  createConnector,
+  useAccount,
+  useConnect,
+  useConnections,
+  useDisconnect,
+  useSignMessage,
+  useSwitchAccount,
+} from "wagmi";
+import { walletConnect } from "wagmi/connectors";
+import { config, projectId } from "./wagmi";
 
 function App() {
   const account = useAccount();
@@ -98,6 +108,25 @@ function App() {
             );
           })}
         </tbody>
+
+        <br />
+
+        <div>
+          <button
+            onClick={() => {
+              const count = connect.connectors.filter((x) => x.type === "walletConnect").length;
+              const connector = createConnector((config) => ({
+                ...walletConnect({ projectId })(config),
+                id: `walletConnect_${count}`,
+                name: `WalletConnect #${count}`,
+              }));
+              config._internal.connectors.setState((x) => [...x, config._internal.connectors.setup(connector)]);
+            }}
+            type="button"
+          >
+            Add New Connector
+          </button>
+        </div>
       </table>
     </div>
   );
